@@ -1,3 +1,5 @@
+package entity;
+
 import lombok.Data;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -8,47 +10,44 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import util.Utils;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Clients {
+public class RealmRoles {
 
     public static final int TOTAL_CLIENTS = 7;
 
     @Data
-    static class ClientData {
+    static class RealmData {
         private String id;
-        private String clientId;
+        private String realmRoleId;
         private List<String> roles = new ArrayList<>();
     }
 
     public static void main(String[] args) {
-        List<ClientData> entities = new ArrayList<>();
+        List<RealmData> entities = new ArrayList<>();
         for (int j = 1; j <= TOTAL_CLIENTS; j++) {
-            ClientData userData = new ClientData();
-            userData.setClientId(String.format("client%s", j));
+            RealmData userData = new RealmData();
+            userData.setRealmRoleId(String.format("realmRole%s", j));
             entities.add(userData);
             createIfNotExists(userData);
         }
 
     }
 
-    private static void createIfNotExists(ClientData entityData) {
-        new Clients().setIdByKey(entityData);
+    private static void createIfNotExists(RealmData entityData) {
+        new RealmRoles().setIdByKey(entityData);
         if(Objects.isNull(entityData.getId())) {
-            new Clients().create(entityData);
-            new Clients().addRoleToClientById(entityData.getClientId()+"Role1",entityData);
-            new Clients().addRoleToClientById(entityData.getClientId()+"Role2",entityData);
+            new RealmRoles().create(entityData);
         }
     }
 
-    public void addRoleToClientById(String roleName, ClientData clientData) {
+    public void addRoleToClientById(String roleName, RealmData clientData) {
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost post = new HttpPost(Utils.url + "/clients/"+clientData.getId()+"/roles/");
         JSONObject json = new JSONObject();
@@ -74,9 +73,9 @@ public class Clients {
 
     }
 
-    public void setIdByKey(ClientData userData) {
+    public void setIdByKey(RealmData userData) {
         HttpClient client = HttpClientBuilder.create().build();
-        HttpGet post = new HttpGet(Utils.url + "/clients?clientId="+userData.getClientId());
+        HttpGet post = new HttpGet(Utils.url + "/roles/"+userData.getRealmRoleId());
 
         try{
             post.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
@@ -87,20 +86,20 @@ public class Clients {
             String content = EntityUtils.toString(response.getEntity());
 
 
-            String jsonId = (String)((JSONObject)((JSONArray) new JSONParser().parse(content)).get(0)).get("id");
+            String jsonId = (String)((JSONObject)(new JSONParser().parse(content))).get("id");
             userData.setId(jsonId);
         }
         catch(Exception e){
-            System.out.println("user " + userData.getClientId()+" not found ");
+            System.out.println("user " + userData.getRealmRoleId()+" not found ");
         }
     }
 
-    public void create(ClientData entity) {
+    public void create(RealmData entity) {
         HttpClient client = HttpClientBuilder.create().build();
-        HttpPost post = new HttpPost(Utils.url + "/clients");
+        HttpPost post = new HttpPost(Utils.url + "/roles");
 
         JSONObject json = new JSONObject();
-        json.put("clientId", entity.getClientId());
+        json.put("name", entity.getRealmRoleId());
         try{
             post.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
             post.setHeader(HttpHeaders.ACCEPT, "application/json");

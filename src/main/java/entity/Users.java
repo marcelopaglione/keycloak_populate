@@ -1,3 +1,5 @@
+package entity;
+
 import lombok.Data;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -12,6 +14,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
