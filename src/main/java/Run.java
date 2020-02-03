@@ -7,8 +7,8 @@ import java.util.concurrent.Executors;
 
 public class Run {
 
-    public ExecutorService pool = Executors.newFixedThreadPool(5);
-    public Boolean cleanAll = true;
+    public ExecutorService pool = Executors.newFixedThreadPool(1);
+    public Boolean cleanAll = false;
 
     public static void main(String[] args) {
         new Run().createClients();
